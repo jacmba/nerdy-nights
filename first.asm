@@ -9,12 +9,12 @@ RESET:
   sei
   cld
 
+  lda #%10000000
+  sta $2001
+
 FOREVER:
   jmp FOREVER
 
-NMI:
-  rti
-
   .bank 1
   .org $FFFA
-  .dw NMI, RESET, 0
+  .dw 0, RESET, 0
