@@ -50,11 +50,129 @@ LoadSpriteLoop:
 Forever:
   jmp Forever
 
+MoveLeft:
+  ldx #$00
+MoveLeftLoop: ;Loop to move group of 4 sprites
+  lda $0203,x
+  sec
+  sbc #$01
+  sta $0203,x
+  txa
+  clc
+  adc #$04
+  tax
+  cpx #$10
+  bmi MoveLeftLoop
+  rts
+
+MoveRight:
+  ldx #$00
+MoveRightLoop:
+  lda $0203,x
+  clc
+  adc #$01
+  sta $0203,x
+  txa
+  clc
+  adc #$04
+  tax
+  cpx #$10
+  bmi MoveRightLoop
+  rts
+
+MoveUp:
+  ldx #$00
+MoveUpLoop:
+  lda $0200,x
+  sec
+  sbc #$01
+  sta $0200,x
+  txa
+  clc
+  adc #$04
+  tax
+  cpx #$10
+  bmi MoveUpLoop
+  rts
+
+MoveDown:
+  ldx #$00
+MoveDownLoop:
+  lda $0200,x
+  clc
+  adc #$01
+  sta $200,x
+  txa
+  clc
+  adc #$04
+  tax
+  cpx #$10
+  bmi MoveDownLoop
+  rts
+
 Nmi:
   lda #$00
   sta $2003
   lda #$02
   sta $4014
+
+  lda #$01
+  sta $4016
+  lda #$00
+  sta $4016 ;latch controller buttons
+
+ReadA:
+  lda $4016
+  and #%00000001
+  beq ReadADone
+ReadADone:
+
+ReadB:
+  lda $4016
+  and #%00000001
+  beq ReadBDone
+ReadBDone:
+
+ReadSelect:
+  lda $4016
+  and #%00000001
+  beq ReadSelectDone
+ReadSelectDone:
+
+ReadStart:
+  lda $4016
+  and #%00000001
+  beq ReadStartDone
+ReadStartDone:
+
+ReadUp:
+  lda $4016
+  and #%00000001
+  beq ReadUpDone
+  jsr MoveUp
+ReadUpDone:
+
+ReadDown:
+  lda $4016
+  and #%00000001
+  beq ReadDownDone
+  jsr MoveDown
+ReadDownDone:
+
+ReadLeft:
+  lda $4016
+  and #%00000001
+  beq ReadLeftDone
+  jsr MoveLeft
+ReadLeftDone:
+
+ReadRight:
+  lda $4016
+  and #%00000001
+  beq ReadRightDone
+  jsr MoveRight
+ReadRightDone:
+
   rti
 
   .bank 1
